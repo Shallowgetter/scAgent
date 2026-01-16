@@ -1,0 +1,29 @@
+ScalingUp:
+  - cfg1: sku200.single_store.standard
+  - cfg2: sku500.single_store.standard
+  - cfg3: sku1000.single_store.standard
+  - cfg4: sku2000.single_store.standard
+  - opt_cfg1: sku200.2_stores.standard
+  - opt_cfg2: sku500.2_stores.standard
+  - opt_cfg3: sku1000.2_stores.standard
+  - opt_cfg4: sku2000.2_stores.standard
+  - opt_cfg5: sku200.3_stores.standard
+  - opt_cfg6: sku500.3_stores.standard
+  - opt_cfg7: sku1000.3_stores.standard
+  - opt_cfg8: sku2000.3_stores.standard
+
+Competition:
+  - cfg1: sku200.single_store.lower_capacity
+  - cfg2: sku200.single_store.lowest_capacity
+  - opt_cfg1: sku200.2_stores.lower_capacity
+  - opt_cfg2: sku200.2_stores.lowest_capacity
+  - opt_cfg3: sku200.3_stores.lower_capacity
+  - opt_cfg4: sku200.3_stores.lowest_capacity
+
+Robustness:
+  - cfg1: sku200.single_store.add_noise_1
+  - cfg2: sku200.single_store.add_noise_2
+  - cfg3: sku200.single_store.add_noise_3
+  - cfg4: sku200.single_store.add_noise_4
+  - cfg5: sku200.single_store.add_noise_5
+  - cfg6: sku200.single_store.add_noise_6

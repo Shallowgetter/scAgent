@@ -1,0 +1,11 @@
+{
+  "section": "ScalingUp",
+  "env_config": "sku2000.3_stores.standard",
+  "mode": "static",
+  "status": "error",
+  "duration_sec": 2.2649765014648438e-05,
+  "balance_raw": null,
+  "balance_sum": NaN,
+  "error": "name 'BS_static' is not defined",
+  "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku2000.3_stores.standard/static"
+}

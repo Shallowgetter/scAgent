@@ -1,0 +1,32 @@
+env:
+  config_name: sku200.single_store.standard
+  wrapper_names: [FlattenWrapper]
+  mode: test
+rollout:
+  episodes: 1
+  max_steps: 200
+  seed: 0
+agents:
+  levels:
+    - name: store
+    - name: warehouse
+  action_partition: auto  # or specify sizes: [100,100]
+llm:
+  provider: gpt
+  model: gpt-4o-mini
+  temperature: 0.2
+  max_tokens: 256
+  use_dummy: true  # set false to call real LLM with API key
+  system_prompt: |
+    You are a supply-chain inventory planner. You control one tier (e.g., store, warehouse, DC).
+    Propose non-negative order quantities per SKU given demand history, inventory, and capacity.
+    Respond with JSON: {"actions": [numbers...]}. Keep it concise.
+  user_prompt: |
+    Context:
+    Tier: {tier_name}
+    Step: {step}
+    Action slice length: {action_dim}
+    Observation summary: {observation}
+    Recent demand history: {demand_history}
+    Business goal: minimize total cost while avoiding stockouts.
+    Return strictly JSON with key 'actions' of length {action_dim}.

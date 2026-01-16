@@ -1,0 +1,134 @@
+[
+  {
+    "section": "ScalingUp",
+    "env_config": "sku200.single_store.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 2.5987625122070312e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku200.single_store.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku500.single_store.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 2.3126602172851562e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku500.single_store.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku1000.single_store.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 3.504753112792969e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku1000.single_store.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku2000.single_store.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 2.384185791015625e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku2000.single_store.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku200.2_stores.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 2.6226043701171875e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku200.2_stores.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku500.2_stores.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 2.3126602172851562e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku500.2_stores.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku1000.2_stores.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 2.4080276489257812e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku1000.2_stores.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku2000.2_stores.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 2.7179718017578125e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku2000.2_stores.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku200.3_stores.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 3.719329833984375e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku200.3_stores.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku500.3_stores.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 4.00543212890625e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku500.3_stores.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku1000.3_stores.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 3.695487976074219e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku1000.3_stores.standard/static"
+  },
+  {
+    "section": "ScalingUp",
+    "env_config": "sku2000.3_stores.standard",
+    "mode": "static",
+    "status": "error",
+    "duration_sec": 2.2649765014648438e-05,
+    "balance_raw": null,
+    "balance_sum": NaN,
+    "error": "name 'BS_static' is not defined",
+    "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku2000.3_stores.standard/static"
+  }
+]

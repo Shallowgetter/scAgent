@@ -1,0 +1,13 @@
+{
+  "section": "ScalingUp",
+  "env_config": "sku200.single_store.standard",
+  "mode": "static",
+  "status": "ok",
+  "duration_sec": 5.2599921226501465,
+  "balance_raw": [
+    1277185.4100000004
+  ],
+  "balance_sum": 1277185.4100000004,
+  "error": null,
+  "vis_path": "/Users/xiangyifei/Documents/GitHub/scAgent/baseline/results/ScalingUp/sku200.single_store.standard/static"
+}
