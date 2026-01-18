@@ -51,12 +51,12 @@ def run_mode(mode: str, env_name: str, vis_root: Path):
     vis_path = vis_root / mode
     ensure_dir(vis_path)
     if mode == "static":
-        balance = sS_static(env_name, str(vis_path))
+        balance, metrics = sS_static(env_name, str(vis_path))
     elif mode == "hindsight":
-        balance = sS_hindsight(env_name, str(vis_path))
+        balance, metrics = sS_hindsight(env_name, str(vis_path))
     else:
         raise ValueError(f"Unknown mode {mode}")
-    return balance
+    return balance, metrics
 
 
 def to_serializable_balance(balance):
@@ -80,6 +80,20 @@ def summarize_balance(balance):
             return None
 
 
+def extract_metrics(info):
+    bwe = info.get("metrics", {}).get("bwe", {}) if isinstance(info, dict) else {}
+    tau = info.get("metrics", {}).get("tau_rec", {}) if isinstance(info, dict) else {}
+    tau_per_tier = tau.get("per_tier") or []
+    stability_max = max([t for t in tau_per_tier if t is not None], default=None)
+    return {
+        "bwe_mean": bwe.get("mean"),
+        "bwe_per_tier": bwe.get("per_tier"),
+        "tau_rec_mean": tau.get("mean"),
+        "tau_rec_per_tier": tau_per_tier,
+        "stability_max_tau": stability_max,
+    }
+
+
 def run_experiments(env_cfgs: Dict[str, List[str]], modes: List[str], results_root: Path):
     summaries = []
     for section, cfg_names in env_cfgs.items():
@@ -91,8 +105,9 @@ def run_experiments(env_cfgs: Dict[str, List[str]], modes: List[str], results_ro
                 status = "ok"
                 balance = None
                 error = None
+                metrics_info = None
                 try:
-                    balance = run_mode(mode, cfg_name, result_dir)
+                    balance, metrics_info = run_mode(mode, cfg_name, result_dir)
                 except Exception as exc:  # pragma: no cover
                     status = "error"
                     error = str(exc)
@@ -105,6 +120,7 @@ def run_experiments(env_cfgs: Dict[str, List[str]], modes: List[str], results_ro
                     "duration_sec": duration,
                     "balance_raw": to_serializable_balance(balance),
                     "balance_sum": summarize_balance(balance),
+                    "metrics": metrics_info,
                     "error": error,
                     "vis_path": str(result_dir / mode),
                 }
@@ -147,13 +163,15 @@ def sS_policy(env, S, s):
     done = False
     sku_count = len(env.get_sku_list())
     total_reward = np.zeros((env.warehouse_count, sku_count))
+    last_info = {}
     while not done:
         mean_demand = env.get_demand_mean()
         action = (env.get_in_stock() + env.get_in_transit()) / (mean_demand + 0.0001)
         action = np.where(action < s, S - action, 0)
         state, reward, done, info = env.step(action)
+        last_info = info or {}
         total_reward += reward
-    return total_reward, info["balance"]
+    return total_reward, info["balance"], last_info
 
 
 def search_sS(env, search_range=np.arange(0.0, 12.1, 1)):
@@ -165,7 +183,7 @@ def search_sS(env, search_range=np.arange(0.0, 12.1, 1)):
 
     for S in search_range:
         for s in np.arange(0, S + 0.1, 0.5):
-            reward, _ = sS_policy(env, [[S] * sku_count] * env.warehouse_count, [[s] * sku_count] * env.warehouse_count)
+            reward, _, _ = sS_policy(env, [[S] * sku_count] * env.warehouse_count, [[s] * sku_count] * env.warehouse_count)
             reward = sum(reward)
             best_S = np.where(reward > max_reward, S, best_S)
             best_s = np.where(reward > max_reward, s, best_s)
@@ -174,21 +192,21 @@ def search_sS(env, search_range=np.arange(0.0, 12.1, 1)):
 
 
 def sS_hindsight(env_name, vis_path):
-    env_train = make_env(env_name, wrapper_names=["OracleWrapper"], mode="test")
+    env_train = make_env(env_name, wrapper_names=["OracleWrapper", "MetricsWrapper"], mode="test")
     best_S, best_s = search_sS(env_train)
-    env_test = make_env(env_name, wrapper_names=["OracleWrapper"], mode="test", vis_path=vis_path)
-    _, balance = sS_policy(env_test, best_S, best_s)
+    env_test = make_env(env_name, wrapper_names=["OracleWrapper", "MetricsWrapper"], mode="test", vis_path=vis_path)
+    _, balance, info = sS_policy(env_test, best_S, best_s)
     env_test.render()
-    return balance
+    return balance, extract_metrics(info)
 
 
 def sS_static(env_name, vis_path):
-    env_train = make_env(env_name, wrapper_names=["OracleWrapper"], mode="train")
+    env_train = make_env(env_name, wrapper_names=["OracleWrapper", "MetricsWrapper"], mode="train")
     best_S, best_s = search_sS(env_train)
-    env_test = make_env(env_name, wrapper_names=["OracleWrapper"], mode="test", vis_path=vis_path)
-    _, balance = sS_policy(env_test, best_S, best_s)
+    env_test = make_env(env_name, wrapper_names=["OracleWrapper", "MetricsWrapper"], mode="test", vis_path=vis_path)
+    _, balance, info = sS_policy(env_test, best_S, best_s)
     env_test.render()
-    return balance
+    return balance, extract_metrics(info)
 
 
 if __name__ == "__main__":

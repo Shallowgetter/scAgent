@@ -53,12 +53,12 @@ def run_mode(mode: str, env_name: str, vis_root: Path):
     vis_path = vis_root / mode
     ensure_dir(vis_path)
     if mode == "static":
-        balance = BS_static(env_name, str(vis_path))
+        balance, metrics = BS_static(env_name, str(vis_path))
     elif mode == "dynamic":
-        balance = BS_dynamic(env_name, str(vis_path))
+        balance, metrics = BS_dynamic(env_name, str(vis_path))
     else:
         raise ValueError(f"Unknown mode {mode}")
-    return balance
+    return balance, metrics
 
 
 def to_serializable_balance(balance):
@@ -86,6 +86,22 @@ def summarize_balance(balance):
             return None
 
 
+def extract_metrics(info):
+    # Extract metrics from info dict produced by MetricsWrapper
+    bwe = info.get("metrics", {}).get("bwe", {}) if isinstance(info, dict) else {}
+    tau = info.get("metrics", {}).get("tau_rec", {}) if isinstance(info, dict) else {}
+    # Stability: use max of per_tier tau_rec (higher = slower recovery)
+    tau_per_tier = tau.get("per_tier") or []
+    stability_max = max([t for t in tau_per_tier if t is not None], default=None)
+    return {
+        "bwe_mean": bwe.get("mean"),
+        "bwe_per_tier": bwe.get("per_tier"),
+        "tau_rec_mean": tau.get("mean"),
+        "tau_rec_per_tier": tau_per_tier,
+        "stability_max_tau": stability_max,
+    }
+
+
 def run_experiments(env_cfgs: Dict[str, List[str]], modes: List[str], results_root: Path):
     summaries = []
     for section, cfg_names in env_cfgs.items():
@@ -97,8 +113,10 @@ def run_experiments(env_cfgs: Dict[str, List[str]], modes: List[str], results_ro
                 status = "ok"
                 balance = None
                 error = None
+                metrics_info = None
                 try:
-                    balance = run_mode(mode, cfg_name, result_dir)
+                    balance, info_metrics = run_mode(mode, cfg_name, result_dir)
+                    metrics_info = info_metrics
                 except Exception as exc:  # pragma: no cover - runtime safety
                     status = "error"
                     error = str(exc)
@@ -111,6 +129,7 @@ def run_experiments(env_cfgs: Dict[str, List[str]], modes: List[str], results_ro
                     "duration_sec": duration,
                     "balance_raw": to_serializable_balance(balance),
                     "balance_sum": summarize_balance(balance),
+                    "metrics": metrics_info,
                     "error": error,
                     "vis_path": str(result_dir / mode),
                 }
@@ -239,6 +258,7 @@ def multilevel_base_stock(env, update_freq=7, static_stock_levels=None):
     sku_count = len(env.get_sku_list())
     total_reward = np.zeros((env.warehouse_count, sku_count))
     stock_level_list = [[] for _ in range(len(env.get_warehouse_list()))]
+    last_info = {}
     while not is_done:
         if current_step % update_freq == 0:
             if isinstance(static_stock_levels, np.ndarray):
@@ -251,29 +271,30 @@ def multilevel_base_stock(env, update_freq=7, static_stock_levels=None):
         replenish = stock_levels - env.get_in_stock() - env.get_in_transit()
         replenish = np.where(replenish >= 0, replenish, 0) / (env.get_demand_mean() + 0.00001)
         states, reward, is_done, info = env.step(replenish)
+        last_info = info or {}
         total_reward += reward
         current_step += 1
 
-    return info["balance"]
+    return info["balance"], last_info
 
 
 def BS_static(env_name, vis_path):
     """Base stock algorithm static mode."""
-    env_train = make_env(env_name, wrapper_names=["OracleWrapper"], mode="train", vis_path=vis_path)
+    env_train = make_env(env_name, wrapper_names=["OracleWrapper", "MetricsWrapper"], mode="train", vis_path=vis_path)
     env_train.reset()
     static_stock_levels = get_multilevel_stock_level(env_train)
-    env_test = make_env(env_name, wrapper_names=["OracleWrapper"], mode="test", vis_path=vis_path)
-    balance = multilevel_base_stock(env_test, static_stock_levels=static_stock_levels)
+    env_test = make_env(env_name, wrapper_names=["OracleWrapper", "MetricsWrapper"], mode="test", vis_path=vis_path)
+    balance, info = multilevel_base_stock(env_test, static_stock_levels=static_stock_levels)
     env_test.render()
-    return balance
+    return balance, extract_metrics(info)
 
 
 def BS_dynamic(env_name, vis_path):
     """Base stock algorithm dynamic mode."""
-    env = make_env(env_name, wrapper_names=["HistoryWrapper"], mode="test", vis_path=vis_path)
-    balance = multilevel_base_stock(env)
+    env = make_env(env_name, wrapper_names=["HistoryWrapper", "MetricsWrapper"], mode="test", vis_path=vis_path)
+    balance, info = multilevel_base_stock(env)
     env.render()
-    return balance
+    return balance, extract_metrics(info)
 
 
 if __name__ == "__main__":
